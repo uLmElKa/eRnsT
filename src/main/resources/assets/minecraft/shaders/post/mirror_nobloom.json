@@ -1,0 +1,57 @@
+{
+  "targets": [
+    "swap",
+    "bright",
+    "blurA",
+    "blurB",
+    "rays",
+    "terrain"
+  ],
+  "passes": [
+    {
+      "name": "ernst_mirror",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "auxtargets": [
+        {
+          "name": "DepthSampler",
+          "id": "minecraft:main:depth"
+        }
+      ]
+    },
+    {
+      "name": "ernst_rays",
+      "intarget": "swap",
+      "outtarget": "rays",
+      "auxtargets": [
+        {
+          "name": "DepthSampler",
+          "id": "minecraft:main:depth"
+        }
+      ]
+    },
+    {
+      "name": "ernst_bloom",
+      "intarget": "swap",
+      "outtarget": "minecraft:main",
+      "auxtargets": [
+        {
+          "name": "BloomSampler",
+          "id": "blurB"
+        },
+        {
+          "name": "RaysSampler",
+          "id": "rays"
+        },
+        {
+          "name": "DepthSampler",
+          "id": "minecraft:main:depth"
+        },
+        {
+          "name": "TerrainDepthSampler",
+          "id": "terrain:depth"
+        }
+      ]
+    }
+  ]
+}

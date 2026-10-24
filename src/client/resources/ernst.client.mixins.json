@@ -1,0 +1,21 @@
+{
+	"required": true,
+	"package": "net.nazu.ernst.client.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"LightTextureMixin",
+		"DirectionalShadingMixin",
+		"ColoredAmbientOcclusionMixin",
+		"SkyColorMixin",
+		"FogColorMixin",
+		"FaceShadeMixin",
+		"LevelRendererInvoker",
+		"GameRendererShadowMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

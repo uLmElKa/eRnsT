@@ -1,0 +1,302 @@
+{
+  "blend": {
+    "func": "add",
+    "srcrgb": "one",
+    "dstrgb": "zero"
+  },
+  "vertex": "screenquad",
+  "fragment": "ernst_mirror",
+  "attributes": [
+    "Position"
+  ],
+  "samplers": [
+    {
+      "name": "DiffuseSampler"
+    },
+    {
+      "name": "DepthSampler"
+    }
+  ],
+  "uniforms": [
+    {
+      "name": "ProjMat",
+      "type": "matrix4x4",
+      "count": 16,
+      "values": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "name": "OutSize",
+      "type": "float",
+      "count": 2,
+      "values": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "ErnstFar",
+      "type": "float",
+      "count": 1,
+      "values": [
+        256.0
+      ]
+    },
+    {
+      "name": "ErnstDay",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1.0
+      ]
+    },
+    {
+      "name": "ErnstSat",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1.12
+      ]
+    },
+    {
+      "name": "ErnstVibrance",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ErnstContrast",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1.06
+      ]
+    },
+    {
+      "name": "ErnstWarmth",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ErnstCool",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1.0
+      ]
+    },
+    {
+      "name": "ErnstSharpen",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ErnstCamY",
+      "type": "float",
+      "count": 1,
+      "values": [
+        70.0
+      ]
+    },
+    {
+      "name": "ErnstFogR",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.6
+      ]
+    },
+    {
+      "name": "ErnstFogG",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.78
+      ]
+    },
+    {
+      "name": "ErnstFogB",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1.0
+      ]
+    },
+    {
+      "name": "ErnstFogDensity",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.004
+      ]
+    },
+    {
+      "name": "ErnstFogHeight",
+      "type": "float",
+      "count": 1,
+      "values": [
+        80.0
+      ]
+    },
+    {
+      "name": "ErnstFogFalloff",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.06
+      ]
+    },
+    {
+      "name": "ErnstFogSun",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.5
+      ]
+    },
+    {
+      "name": "ErnstFwdX",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ErnstFwdY",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ErnstFwdZ",
+      "type": "float",
+      "count": 1,
+      "values": [
+        -1.0
+      ]
+    },
+    {
+      "name": "ErnstRightX",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1.0
+      ]
+    },
+    {
+      "name": "ErnstRightY",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ErnstRightZ",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ErnstUpX",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ErnstUpY",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1.0
+      ]
+    },
+    {
+      "name": "ErnstUpZ",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ErnstSunDX",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ErnstSunDY",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1.0
+      ]
+    },
+    {
+      "name": "ErnstSunDZ",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ErnstTanHalf",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.6
+      ]
+    },
+    {
+      "name": "ErnstAspect",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1.78
+      ]
+    },
+    {
+      "name": "ErnstSunLight",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    }
+  ]
+}

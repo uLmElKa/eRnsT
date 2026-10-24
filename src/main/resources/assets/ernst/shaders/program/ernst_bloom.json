@@ -1,0 +1,119 @@
+{
+  "blend": {
+    "func": "add",
+    "srcrgb": "one",
+    "dstrgb": "zero"
+  },
+  "vertex": "screenquad",
+  "fragment": "ernst_bloom",
+  "attributes": [
+    "Position"
+  ],
+  "samplers": [
+    {
+      "name": "DiffuseSampler"
+    },
+    {
+      "name": "BloomSampler"
+    },
+    {
+      "name": "RaysSampler"
+    },
+    {
+      "name": "DepthSampler"
+    },
+    {
+      "name": "TerrainDepthSampler"
+    }
+  ],
+  "uniforms": [
+    {
+      "name": "ProjMat",
+      "type": "matrix4x4",
+      "count": 16,
+      "values": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "name": "OutSize",
+      "type": "float",
+      "count": 2,
+      "values": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "ErnstBloom",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.5
+      ]
+    },
+    {
+      "name": "ErnstExposure",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1.12
+      ]
+    },
+    {
+      "name": "ErnstShoulder",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.85
+      ]
+    },
+    {
+      "name": "ErnstVignette",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ErnstEntityBloom",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "ErnstBloomOn",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1.0
+      ]
+    },
+    {
+      "name": "ErnstRaysOn",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1.0
+      ]
+    }
+  ]
+}
