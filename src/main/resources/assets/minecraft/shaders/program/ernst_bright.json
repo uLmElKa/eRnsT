@@ -4,7 +4,7 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "screenquad",
+  "vertex": "ernst_quad",
   "fragment": "ernst_bright",
   "attributes": [
     "Position"
@@ -75,6 +75,15 @@
       "count": 1,
       "values": [
         0.0
+      ]
+    },
+    {
+      "name": "InSize",
+      "type": "float",
+      "count": 2,
+      "values": [
+        1.0,
+        1.0
       ]
     }
   ]

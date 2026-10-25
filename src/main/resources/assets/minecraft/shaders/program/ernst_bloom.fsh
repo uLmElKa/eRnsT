@@ -16,10 +16,17 @@ uniform float ErnstRaysOn;
 in vec2 texCoord;
 out vec4 fragColor;
 
+// сглаженное чтение текстуры половинного размера
+vec3 smooth4(sampler2D s, vec2 uv) {
+    vec2 h = 0.5 / vec2(textureSize(s, 0));
+    return 0.25 * (texture(s, uv + vec2(-h.x, -h.y)).rgb + texture(s, uv + vec2(h.x, -h.y)).rgb
+                 + texture(s, uv + vec2(-h.x,  h.y)).rgb + texture(s, uv + vec2(h.x,  h.y)).rgb);
+}
+
 void main() {
     vec3 scene = texture(DiffuseSampler, texCoord).rgb;
-    vec3 bloom = texture(BloomSampler, texCoord).rgb;
-    vec3 rays = texture(RaysSampler, texCoord).rgb;
+    vec3 bloom = smooth4(BloomSampler, texCoord);
+    vec3 rays = smooth4(RaysSampler, texCoord);
     bloom *= ErnstBloomOn;   // выключенный эффект не даёт вклада
     rays *= ErnstRaysOn;
 

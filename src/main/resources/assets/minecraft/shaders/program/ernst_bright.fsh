@@ -1,6 +1,7 @@
 #version 150
 
 uniform sampler2D DiffuseSampler;
+uniform vec2 InSize;
 uniform float ErnstThreshold;
 uniform float ErnstLight;
 uniform sampler2D DepthSampler;
@@ -11,7 +12,11 @@ in vec2 texCoord;
 out vec4 fragColor;
 
 void main() {
-    vec3 c = texture(DiffuseSampler, texCoord).rgb;
+    vec2 o = 0.5 / InSize;
+    vec3 c = 0.25 * (texture(DiffuseSampler, texCoord + vec2(-o.x, -o.y)).rgb
+                   + texture(DiffuseSampler, texCoord + vec2( o.x, -o.y)).rgb
+                   + texture(DiffuseSampler, texCoord + vec2(-o.x,  o.y)).rgb
+                   + texture(DiffuseSampler, texCoord + vec2( o.x,  o.y)).rgb);
     float l = dot(c, vec3(0.299, 0.587, 0.114));
 
     // тёплые яркие пиксели (факелы, лампы, лава) светятся легче

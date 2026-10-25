@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.BitSet;
 
 @Mixin(targets = "net.minecraft.client.renderer.block.ModelBlockRenderer$AmbientOcclusionFace")
-public class DirectionalShadingMixin {
+public class AmbientOcclusionMixin {
 
     @Shadow
     @Final

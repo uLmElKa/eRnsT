@@ -80,6 +80,7 @@ public class ERnsTClient implements ClientModInitializer {
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            ERnsTLights.tick(client);
             while (toggleKey.consumeClick()) {
                 modEnabled = !modEnabled;
                 ERnsTConfig.get().enabled = modEnabled;
@@ -92,8 +93,8 @@ public class ERnsTClient implements ClientModInitializer {
                 if (ERnsTConfig.get().showNotification) {
                     notificationTicks = 80;
                     if (client.player != null) {
-                        String status = modEnabled ? "§aВКЛЮЧЕН" : "§cВЫКЛЮЧЕН";
-                        client.player.sendSystemMessage(Component.literal("§b[eRnsT] §fГрафика: " + status));
+                        Component status = Component.translatable(modEnabled ? "text.ernst.status.on" : "text.ernst.status.off");
+                        client.player.sendSystemMessage(Component.translatable("text.ernst.msg.toggle", status));
                     }
                 }
             }
@@ -115,7 +116,7 @@ public class ERnsTClient implements ClientModInitializer {
             if (client.options.hideGui) return;
 
             int screenWidth = client.getWindow().getGuiScaledWidth();
-            int boxWidth = 160;
+            int boxWidth = 180;
             int boxHeight = 28;
             int x = screenWidth - boxWidth - 12;
             int y = 12;
@@ -125,9 +126,11 @@ public class ERnsTClient implements ClientModInitializer {
             int accentColor = modEnabled ? 0xFF00FF66 : 0xFFFF3333;
             guiGraphics.fill(x, y, x + 4, y + boxHeight, accentColor);
 
-            guiGraphics.drawString(client.font, "eRnsT Renderer", x + 12, y + 5, 0xFFFFFF, true);
+            guiGraphics.drawString(client.font, Component.translatable("text.ernst.hud.title"), x + 12, y + 5, 0xFFFFFF, true);
 
-            String statusText = modEnabled ? "Шейдеры (радиус: " + shadowDistanceChunks + " ч.)" : "Статус: Выключен";
+            Component statusText = modEnabled
+                    ? Component.translatable("text.ernst.hud.on", shadowDistanceChunks)
+                    : Component.translatable("text.ernst.hud.off");
             int statusColor = modEnabled ? 0x55FF55 : 0xFF5555;
             guiGraphics.drawString(client.font, statusText, x + 12, y + 15, statusColor, true);
         });

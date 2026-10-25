@@ -4,8 +4,7 @@
 	"compatibilityLevel": "JAVA_21",
 	"client": [
 		"LightTextureMixin",
-		"DirectionalShadingMixin",
-		"ColoredAmbientOcclusionMixin",
+		"AmbientOcclusionMixin",
 		"SkyColorMixin",
 		"FogColorMixin",
 		"FaceShadeMixin",

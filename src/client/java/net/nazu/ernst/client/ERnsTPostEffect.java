@@ -29,9 +29,10 @@ public class ERnsTPostEffect {
     private static void prepare(Minecraft mc) throws Exception {
         // Выбираем цепочку по тому, что включено: выключенные проходы не выполняются совсем
         ERnsTConfig cfg = ERnsTConfig.get();
+        boolean raysPass = cfg.raysEnabled || cfg.lightRays;
         String variant = cfg.bloomEnabled
-                ? (cfg.raysEnabled ? "mirror" : "mirror_norays")
-                : (cfg.raysEnabled ? "mirror_nobloom" : "mirror_basic");
+                ? (raysPass ? "mirror" : "mirror_norays")
+                : (raysPass ? "mirror_nobloom" : "mirror_basic");
         if (chain != null && !variant.equals(loadedVariant)) {
             chain.close();
             chain = null;
@@ -49,6 +50,17 @@ public class ERnsTPostEffect {
             chain.resize(nw, nh);
             w = nw;
             h = nh;
+            applyHalfRes();
+        }
+    }
+
+    // Размытие, лучи и яркие места считаются в половинном разрешении
+    private static void applyHalfRes() {
+        int hw = Math.max(1, w / 2);
+        int hh = Math.max(1, h / 2);
+        for (String name : new String[]{"bright", "blurA", "blurB", "rays"}) {
+            RenderTarget t = chain.getTempTarget(name);
+            if (t != null) t.resize(hw, hh, Minecraft.ON_OSX);
         }
     }
 
@@ -100,7 +112,7 @@ public class ERnsTPostEffect {
                 chain.setUniform("ErnstVignette", c.vignette);
                 chain.setUniform("ErnstEntityBloom", c.entityBloom ? 1.0f : 0.0f);
                 chain.setUniform("ErnstBloomOn", c.bloomEnabled ? 1.0f : 0.0f);
-                chain.setUniform("ErnstRaysOn", c.raysEnabled ? 1.0f : 0.0f);
+                chain.setUniform("ErnstRaysOn", (c.raysEnabled || c.lightRays) ? 1.0f : 0.0f);
 
                 // Камера, солнце, туман и лучи
                 ClientLevel level = mc.level;
@@ -146,8 +158,25 @@ public class ERnsTPostEffect {
                     chain.setUniform("ErnstFogHeight", c.fogHeight);
                     chain.setUniform("ErnstFogFalloff", c.fogFalloff);
                     chain.setUniform("ErnstFogSun", c.fogSun);
-                    chain.setUniform("ErnstRays", on ? c.rayStrength : 0.0f);
+                    // Лучи солнца не считаем, если оно позади камеры или за горизонтом
+                    boolean sunVisible = (sdx * f.x + sdy * f.y) > 0.05f && sunLight > 0.02f;
+                    chain.setUniform("ErnstRays", on && c.raysEnabled && sunVisible ? c.rayStrength : 0.0f);
                     chain.setUniform("ErnstRayLen", c.rayLength);
+
+                    // Лучи от факелов, лавы, порталов: слабее днём в Верхнем мире, работают во всех измерениях
+                    boolean lightsOn = ERnsTClient.modEnabled && c.lightRays && cam.getFluidInCamera() == FogType.NONE;
+                    float dayDim = level.dimension() == Level.OVERWORLD ? day : 0.0f;
+                    float lightStrength = lightsOn ? c.lightRayStrength * (1.0f - 0.65f * dayDim) : 0.0f;
+                    ERnsTLights.select(cam.getPosition(), f, r, u, tanHalf, (float) nw / (float) nh, lightStrength);
+                    for (int i = 0; i < ERnsTLights.MAX; i++) {
+                        chain.setUniform("ErnstL" + i + "U", ERnsTLights.outU[i]);
+                        chain.setUniform("ErnstL" + i + "V", ERnsTLights.outV[i]);
+                        chain.setUniform("ErnstL" + i + "D", ERnsTLights.outD[i]);
+                        chain.setUniform("ErnstL" + i + "I", ERnsTLights.outI[i]);
+                        chain.setUniform("ErnstL" + i + "R", ERnsTLights.outR[i]);
+                        chain.setUniform("ErnstL" + i + "G", ERnsTLights.outG[i]);
+                        chain.setUniform("ErnstL" + i + "B", ERnsTLights.outB[i]);
+                    }
                 }
 
                 RenderSystem.disableBlend();

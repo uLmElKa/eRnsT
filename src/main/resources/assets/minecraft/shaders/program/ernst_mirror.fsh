@@ -5,7 +5,6 @@ uniform sampler2D DepthSampler;
 uniform vec2 OutSize;
 
 uniform float ErnstFar;
-uniform float ErnstDay;
 uniform float ErnstSat;
 uniform float ErnstVibrance;
 uniform float ErnstContrast;

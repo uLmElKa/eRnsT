@@ -11,8 +11,10 @@ uniform mat4 ProjMat;
 uniform vec3 ChunkOffset;
 
 out vec2 texCoord0;
+out float relY;
 
 void main() {
     gl_Position = ProjMat * ModelViewMat * vec4(Position + ChunkOffset, 1.0);
     texCoord0 = UV0;
+    relY = Position.y + ChunkOffset.y;
 }

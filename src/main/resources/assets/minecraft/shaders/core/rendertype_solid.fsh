@@ -28,5 +28,6 @@ void main() {
     float depth = clamp(1.0 - lum / 0.85, 0.0, 1.0);
     color.rgb *= mix(vec3(1.0), vec3(0.88, 0.95, 1.10), depth * ErnstShadeTint * ErnstEnabled);
     color.rgb = mix(color.rgb, tex * lum * 1.25, depth * 0.35 * ErnstEnabled);
+    color.rgb = ernstShadowApply(color.rgb);
     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
 }

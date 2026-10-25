@@ -3,11 +3,11 @@ uniform float ErnstShadowStrength;
 uniform float ErnstSunLight;
 uniform float ErnstShadowDebug;
 uniform vec3 ErnstSunDir;
+uniform float ErnstShadowSky;   // 1 в Аду и Крае
 
 in vec3 ernstShadowPos;
 in vec4 ernstNormalSky;
-
-const float ERNST_SHADOW_RES = 2048.0;
+in float ernstBlockLight;
 
 vec3 ernstShadowApply(vec3 col) {
     if (ErnstShadowStrength <= 0.0) {
@@ -16,8 +16,8 @@ vec3 ernstShadowApply(vec3 col) {
 
     vec3 n = normalize(ernstNormalSky.xyz);
     float ndl = dot(n, normalize(ErnstSunDir));
-    float facing = smoothstep(0.0, 0.25, ndl);
-    float sky = ernstNormalSky.w;
+    float facing = smoothstep(-0.05, 0.2, ndl);
+    float sky = max(ernstNormalSky.w, ErnstShadowSky);
 
     // внутри ли карты теней
     vec2 uv = ernstShadowPos.xy;
@@ -28,16 +28,18 @@ vec3 ernstShadowApply(vec3 col) {
 
     // смещение, чтобы поверхности не затеняли сами себя
     float bias = (0.15 + 0.35 * (1.0 - clamp(ndl, 0.0, 1.0))) / 400.0;
-    float texel = 1.0 / ERNST_SHADOW_RES;
+    float texel = 1.0 / float(textureSize(ShadowMap, 0).x);
+    bias *= texel * 2048.0;   // при меньшем разрешении нужен больший запас
 
     float lit = 0.0;
-    for (int x = -1; x <= 1; x++) {
-        for (int y = -1; y <= 1; y++) {
-            float d = texture(ShadowMap, uv + vec2(float(x), float(y)) * texel).r;
+    for (int x = 0; x < 2; x++) {
+        for (int y = 0; y < 2; y++) {
+            vec2 o = (vec2(float(x), float(y)) - 0.5) * texel;
+            float d = texture(ShadowMap, uv + o).r;
             lit += step(ernstShadowPos.z - bias, d);
         }
     }
-    lit /= 9.0;
+    lit *= 0.25;
 
     float shadow = (1.0 - lit) * inside * edge;
 
@@ -49,7 +51,9 @@ vec3 ernstShadowApply(vec3 col) {
     }
 
     float dark = shadow * facing * sky * ErnstSunLight * ErnstShadowStrength;
-    col *= 1.0 - dark;
-    col *= mix(vec3(1.0), vec3(0.86, 0.94, 1.08), dark);
+    dark *= 1.0 - 0.6 * ernstBlockLight * ErnstShadowSky;   // у лавы и факелов тень слабее
+    // как у цветного AO: цвет блока сохраняется, тень холоднее и темнее, но не чёрная
+    vec3 shaded = col * vec3(0.58, 0.68, 0.90);
+    col = mix(col, shaded, clamp(dark, 0.0, 1.0));
     return col;
 }

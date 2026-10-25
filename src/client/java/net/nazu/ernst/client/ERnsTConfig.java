@@ -32,6 +32,12 @@ public class ERnsTConfig {
     public float shadowStrength = 0.6f;
     public float shadowRange = 64.0f;        // радиус карты теней в блоках
     public boolean shadowDebug = false;      // красным показывает, где тень
+    public boolean shadowHighRes = false;    // карта теней 2048 вместо 1024
+    public boolean lightRays = false;        // лучи от факелов, лавы, порталов
+    public float lightRayStrength = 0.6f;
+    public boolean shadowsNether = true;     // тени в Аду (только от высоких построек)
+    public boolean shadowsEnd = true;        // тени в Крае
+    public float netherShadowHeight = 24.0f; // постройки выше этой отметки над игроком тени не дают
 
     // ===== Блоки и освещение =====
     public float terrainEffect;               // сила цветного AO и упрощения текстур
@@ -62,9 +68,9 @@ public class ERnsTConfig {
     // Пресет производительности меняет только то, что влияет на FPS
     public void applyQuality(Quality q) {
         switch (q) {
-            case PERFORMANCE -> { bloomEnabled = false; raysEnabled = false; shadowsEnabled = false; shadowDistanceChunks = 4; }
-            case QUALITY -> { bloomEnabled = true; raysEnabled = true; shadowsEnabled = true; shadowDistanceChunks = 12; }
-            default -> { bloomEnabled = true; raysEnabled = false; shadowsEnabled = false; shadowDistanceChunks = 8; }
+            case PERFORMANCE -> { bloomEnabled = false; raysEnabled = false; shadowsEnabled = false; lightRays = false; shadowHighRes = false; shadowDistanceChunks = 4; }
+            case QUALITY -> { bloomEnabled = true; raysEnabled = true; shadowsEnabled = true; lightRays = true; shadowHighRes = true; shadowDistanceChunks = 12; }
+            default -> { bloomEnabled = true; raysEnabled = false; shadowsEnabled = false; lightRays = false; shadowHighRes = false; shadowDistanceChunks = 8; }
         }
     }
 

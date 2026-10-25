@@ -23,6 +23,7 @@ out vec2 texCoord0;
 
 void main() {
     vec3 pos = Position + ChunkOffset;
+    ernstShadowVertex(pos, Normal, UV2);
     gl_Position = ProjMat * ModelViewMat * vec4(pos, 1.0);
 
     vertexDistance = fog_distance(pos, FogShape);
