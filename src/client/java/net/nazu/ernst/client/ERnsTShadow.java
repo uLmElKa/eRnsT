@@ -7,6 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.Minecraft;
@@ -40,17 +41,37 @@ public final class ERnsTShadow {
     private static TextureTarget target;
     private static boolean failed = false;
 
+    // Sodium рисует рельеф по-своему, поэтому наша карта теней с ним не работает. Не тратим на неё время.
+    private static final boolean SODIUM = FabricLoader.getInstance().isModLoaded("sodium");
+
     // Запас по краям экрана: тени считаются и для того, что чуть за кадром, поэтому они не появляются рывком при повороте
     private static final double VIEW_MARGIN = 0.12;
     private static final Matrix4f view = new Matrix4f();
     private static final Matrix4f proj = new Matrix4f();
     private static final Matrix4f shadowMat = new Matrix4f();
 
+    // Данные для шейдера постобработки: с Sodium тени накладываются на готовую картинку
+    public static boolean screenOn = false;
+    public static float screenStrength = 0.0f, screenSun = 0.0f;
+    public static float dirX = 0.0f, dirY = 1.0f, dirZ = 0.0f;
+    public static int screenTex = 0;
+
+    public static Matrix4f matrix() {
+        return shadowMat;
+    }
+
     public static void init() {
-        CoreShaderRegistrationCallback.EVENT.register(context -> context.register(
-                ResourceLocation.fromNamespaceAndPath("ernst", "ernst_shadow"),
-                DefaultVertexFormat.BLOCK,
-                shader -> shadowShader = shader));
+        CoreShaderRegistrationCallback.EVENT.register(context -> {
+            context.register(
+                    ResourceLocation.fromNamespaceAndPath("ernst", "ernst_shadow"),
+                    DefaultVertexFormat.BLOCK,
+                    shader -> shadowShader = shader);
+            // Простой шейдер для упрощённого рельефа (режим с Sodium)
+            context.register(
+                    ResourceLocation.fromNamespaceAndPath("ernst", "ernst_shadow_hf"),
+                    DefaultVertexFormat.POSITION,
+                    shader -> ERnsTHeightField.shader = shader);
+        });
 
         // После того как определены видимые участки мира, но до отрисовки рельефа
         WorldRenderEvents.AFTER_SETUP.register(ERnsTShadow::onSetup);
@@ -88,7 +109,8 @@ public final class ERnsTShadow {
             boolean overworld = level.dimension() == Level.OVERWORLD;
             boolean nether = level.dimension() == Level.NETHER;
             boolean end = level.dimension() == Level.END;
-            boolean allowed = overworld ? sunLight > 0.02f : (nether ? c.shadowsNether : (end && c.shadowsEnd));
+            // В Аду тени с Sodium не делаем: упрощённый рельеф там был бы одной плоскостью потолка
+            boolean allowed = overworld ? sunLight > 0.02f : (nether ? (c.shadowsNether && !SODIUM) : (end && c.shadowsEnd));
 
             if (nether || end) {
                 // Солнца нет, поэтому берём фиксированный свет сверху под небольшим углом
@@ -125,6 +147,14 @@ public final class ERnsTShadow {
 
         int texId = (on && target != null) ? target.getDepthTextureId() : main.getColorTextureId();
         float strength = on ? c.shadowStrength : 0.0f;
+
+        screenOn = on && SODIUM;
+        screenStrength = strength;
+        screenSun = sunLight * (forcedSky > 0.5f ? 1.0f : ERnsTDay.skyExposure);
+        dirX = sx;
+        dirY = sy;
+        dirZ = sz;
+        screenTex = texId;
 
         apply(GameRenderer.getRendertypeSolidShader(), strength, sunLight, sx, sy, sz, texId, c.shadowDebug, forcedSky);
         apply(GameRenderer.getRendertypeCutoutMippedShader(), strength, sunLight, sx, sy, sz, texId, c.shadowDebug, forcedSky);
@@ -164,6 +194,14 @@ public final class ERnsTShadow {
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
         RenderSystem.disableBlend();
+
+        if (SODIUM) {
+            // Sodium рисует мир сам, поэтому в карту теней кладём упрощённый рельеф (высоты столбцов)
+            ERnsTHeightField.update(mc.level, cp, (int) c.shadowRange);
+            ERnsTHeightField.draw(view, proj, cp);
+            mc.getMainRenderTarget().bindWrite(true);
+            return;
+        }
 
         LevelRendererInvoker inv = (LevelRendererInvoker) (Object) ctx.worldRenderer();
 

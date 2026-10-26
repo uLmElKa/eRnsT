@@ -4,6 +4,9 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.Camera;
+import net.minecraft.client.renderer.EffectInstance;
+import net.minecraft.client.renderer.PostPass;
+import net.nazu.ernst.client.mixin.PostChainAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.PostChain;
@@ -182,6 +185,20 @@ public class ERnsTPostEffect {
                 RenderSystem.disableBlend();
                 RenderSystem.disableDepthTest();
                 RenderSystem.resetTextureMatrix();
+                // Параметры теней для шейдера (с Sodium тени накладываются на готовую картинку)
+                for (PostPass pass : ((PostChainAccessor) (Object) chain).ernst$getPasses()) {
+                    EffectInstance fx = pass.getEffect();
+                    if (!"ernst_mirror".equals(fx.getName())) continue;
+                    fx.safeGetUniform("ShadowMat").set(ERnsTShadow.matrix());
+                    fx.safeGetUniform("ErnstShadowDir").set(ERnsTShadow.dirX, ERnsTShadow.dirY, ERnsTShadow.dirZ);
+                    fx.safeGetUniform("ErnstScreenShadow").set(ERnsTShadow.screenOn ? 1.0f : 0.0f);
+                    fx.safeGetUniform("ErnstShadowStrength").set(ERnsTShadow.screenStrength);
+                    fx.safeGetUniform("ErnstShadowSun").set(ERnsTShadow.screenSun);
+                    fx.safeGetUniform("ErnstShadowDebug").set(c.shadowDebug ? 1.0f : 0.0f);
+                    final int shadowTex = ERnsTShadow.screenTex;
+                    fx.setSampler("ShadowMap", () -> shadowTex);
+                }
+
                 chain.process(pt);
                 mc.getMainRenderTarget().bindWrite(true);
             } catch (Exception e) {

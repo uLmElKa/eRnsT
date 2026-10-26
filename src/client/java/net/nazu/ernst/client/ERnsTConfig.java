@@ -33,6 +33,7 @@ public class ERnsTConfig {
     public float shadowRange = 64.0f;        // радиус карты теней в блоках
     public boolean shadowDebug = false;      // красным показывает, где тень
     public boolean shadowHighRes = false;    // карта теней 2048 вместо 1024
+    public boolean sodiumTerrainEffects = true;   // эффекты блоков внутри шейдера Sodium
     public boolean lightRays = false;        // лучи от факелов, лавы, порталов
     public float lightRayStrength = 0.6f;
     public boolean shadowsNether = true;     // тени в Аду (только от высоких построек)

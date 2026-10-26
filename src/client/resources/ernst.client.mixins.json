@@ -9,7 +9,9 @@
 		"FogColorMixin",
 		"FaceShadeMixin",
 		"LevelRendererInvoker",
-		"GameRendererShadowMixin"
+		"GameRendererShadowMixin",
+		"SodiumShaderPatchMixin",
+		"PostChainAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1
